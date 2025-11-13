@@ -1,5 +1,5 @@
 import { useActions, useValues } from 'kea'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { IconClock, IconFilter, IconMinusSquare, IconPlusSquare, IconRefresh } from '@posthog/icons'
 import {
@@ -43,9 +43,18 @@ export const scene: SceneExport = {
 }
 
 export function LogsScene(): JSX.Element {
-    const { wrapBody, prettifyJson, parsedLogs, sparklineData, logsLoading, sparklineLoading, timestampFormat } =
-        useValues(logsLogic)
+    const {
+        wrapBody,
+        prettifyJson,
+        parsedLogs,
+        sparklineData,
+        logsLoading,
+        sparklineLoading,
+        timestampFormat,
+        highlightedLogId,
+    } = useValues(logsLogic)
     const { runQuery, setDateRangeFromSparkline } = useActions(logsLogic)
+    const tableContainerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         runQuery()
@@ -111,13 +120,15 @@ export function LogsScene(): JSX.Element {
             </div>
             <SceneDivider />
             <DisplayOptions />
-            <div className="flex-1 overflow-y-auto border rounded bg-bg-light">
+            <div ref={tableContainerRef} className="flex-1 overflow-y-auto border rounded bg-bg-light">
                 <LemonTable
                     hideScrollbar
                     dataSource={parsedLogs}
                     loading={logsLoading}
                     size="small"
                     embedded
+                    rowKey="uuid"
+                    rowStatus={(record) => (record.uuid === highlightedLogId ? 'highlighted' : null)}
                     columns={[
                         {
                             title: '',

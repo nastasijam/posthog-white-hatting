@@ -51,6 +51,7 @@ import {
     SourceConfig,
     TileFilters,
 } from '~/queries/schema/schema-general'
+import { QuickFilter } from '~/queries/schema/schema-general'
 import { HogQLQueryString, setLatestVersionsOnQuery } from '~/queries/utils'
 import {
     ActionType,
@@ -1122,6 +1123,14 @@ export class ApiRequest {
 
     public errorTrackingIssueCohort(issueId: ErrorTrackingIssue['id'], teamId?: TeamType['id']): ApiRequest {
         return this.errorTrackingIssue(issueId, teamId).addPathComponent(`cohort`)
+    }
+
+    public quickFilters(teamId?: TeamType['id']): ApiRequest {
+        return this.environmentsDetail(teamId).addPathComponent('quick_filters')
+    }
+
+    public quickFilter(id: string, teamId?: TeamType['id']): ApiRequest {
+        return this.quickFilters(teamId).addPathComponent(id)
     }
 
     // # Warehouse
@@ -3232,6 +3241,29 @@ const api = {
 
         async assignCohort(issueId: ErrorTrackingIssue['id'], cohortId: CohortType['id']): Promise<{ id: string }> {
             return await new ApiRequest().errorTrackingIssueCohort(issueId).put({ data: { cohortId } })
+        },
+    },
+
+    quickFilters: {
+        async list(context: string): Promise<CountedPaginatedResponse<QuickFilter>> {
+            return await new ApiRequest().quickFilters().withQueryString(toParams({ context })).get()
+        },
+        async get(id: string): Promise<QuickFilter> {
+            return await new ApiRequest().quickFilter(id).get()
+        },
+        async create(
+            data: Pick<QuickFilter, 'contexts' | 'name' | 'property_name' | 'type' | 'options'>
+        ): Promise<QuickFilter> {
+            return await new ApiRequest().quickFilters().create({ data })
+        },
+        async update(
+            id: string,
+            data: Partial<Pick<QuickFilter, 'name' | 'property_name' | 'type' | 'options' | 'contexts'>>
+        ): Promise<QuickFilter> {
+            return await new ApiRequest().quickFilter(id).update({ data })
+        },
+        async delete(id: string): Promise<void> {
+            return await new ApiRequest().quickFilter(id).delete()
         },
     },
 

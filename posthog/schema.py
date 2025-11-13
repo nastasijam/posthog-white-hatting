@@ -1150,6 +1150,33 @@ class ErrorTrackingExplainIssueToolContext(BaseModel):
     stacktrace: str
 
 
+class QuickFilterType(StrEnum):
+    MANUAL_OPTIONS = "manual-options"
+    AUTO_DISCOVERY = "auto-discovery"
+
+
+class QuickFilterOption(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    label: str
+    value: str
+
+
+class QuickFilter(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    created_at: datetime
+    domain: str
+    id: str
+    name: str
+    options: list[QuickFilterOption]
+    property_path: str
+    type: QuickFilterType
+    updated_at: datetime
+
+
 class FirstEvent(BaseModel):
     model_config = ConfigDict(
         extra="forbid",

@@ -1,0 +1,51 @@
+import { useActions, useValues } from 'kea'
+
+import { IconGear } from '@posthog/icons'
+import { LemonButton } from '@posthog/lemon-ui'
+
+import {
+    QuickFilterSelector,
+    QuickFiltersModal,
+    quickFiltersLogic,
+    quickFiltersModalLogic,
+} from 'lib/components/QuickFilters'
+
+import { QuickFilter, QuickFilterContext } from '~/queries/schema/schema-general'
+
+import { quickFiltersSectionLogic } from './quickFiltersSectionLogic'
+
+export interface QuickFiltersSectionProps {
+    context: QuickFilterContext
+}
+
+export function QuickFiltersSection({ context }: QuickFiltersSectionProps): JSX.Element {
+    const { quickFilters } = useValues(quickFiltersLogic({ context }))
+    const { selectedQuickFilters } = useValues(quickFiltersSectionLogic({ context }))
+    const { setQuickFilterValue } = useActions(quickFiltersSectionLogic({ context }))
+    const { openModal } = useActions(quickFiltersModalLogic({ context }))
+
+    return (
+        <>
+            {quickFilters.map((filter: QuickFilter) => {
+                const selectedFilter = selectedQuickFilters[filter.property_name]
+
+                return (
+                    <QuickFilterSelector
+                        key={filter.id}
+                        label={filter.name}
+                        options={filter.options}
+                        value={selectedFilter?.value || null}
+                        operator={selectedFilter?.operator || null}
+                        onChange={(value, operator) => {
+                            setQuickFilterValue(filter.property_name, value, operator)
+                        }}
+                    />
+                )
+            })}
+            <LemonButton size="small" icon={<IconGear />} onClick={openModal}>
+                Configure quick filters
+            </LemonButton>
+            <QuickFiltersModal context={QuickFilterContext.ErrorTrackingIssueFilters} />
+        </>
+    )
+}

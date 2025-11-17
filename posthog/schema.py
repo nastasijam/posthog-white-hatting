@@ -3781,6 +3781,7 @@ class BreakdownFilter(BaseModel):
     breakdown_histogram_bin_count: Optional[int] = None
     breakdown_limit: Optional[int] = None
     breakdown_normalize_url: Optional[bool] = None
+    breakdown_path_cleaning: Optional[bool] = None
     breakdown_type: Optional[BreakdownType] = BreakdownType.EVENT
     breakdowns: Optional[list[Breakdown]] = Field(default=None, max_length=3)
 

@@ -5,7 +5,7 @@ from typing import Any
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 
-from posthog.schema import MaxRecordingUniversalFilters
+from posthog.schema import MaxRecordingUniversalFilters, RecordingsQuery
 
 from posthog.models import Team, User
 
@@ -133,15 +133,77 @@ class SearchSessionRecordingsTool(MaxTool):
         result = await graph.compile_full_graph().ainvoke(graph_context)
         return result
 
+    def _convert_max_filters_to_recordings_query(self, replay_filters: MaxRecordingUniversalFilters) -> RecordingsQuery:
+        """Convert Max-generated filters into recordings query format"""
+        properties = []
+        if replay_filters.filter_group and replay_filters.filter_group.values:
+            for inner_group in replay_filters.filter_group.values:
+                if hasattr(inner_group, "values"):
+                    properties.extend(inner_group.values)
+        recordings_query = RecordingsQuery(
+            date_from=replay_filters.date_from,
+            date_to=replay_filters.date_to,
+            properties=properties,
+            filter_test_accounts=replay_filters.filter_test_accounts,
+            order=replay_filters.order,
+            having_predicates=(
+                [
+                    {"key": dur.key, "type": "recording", "operator": dur.operator, "value": dur.value}
+                    for dur in (replay_filters.duration or [])
+                ]
+                if replay_filters.duration
+                else None
+            ),
+        )
+        return recordings_query
+
+    def _get_recordings_with_filters(self, recordings_query: RecordingsQuery, limit: int = 50) -> Any:
+        """Get recordings from DB with filters"""
+        from posthog.session_recordings.queries.session_recording_list_from_query import SessionRecordingListFromQuery
+
+        recordings_query.limit = limit
+        try:
+            query_runner = SessionRecordingListFromQuery(
+                team=self._team, query=recordings_query, hogql_query_modifiers=None, limit=limit
+            )
+            results = query_runner.run()
+        except Exception as e:
+            logger.exception(
+                f"Error getting recordings with filters query ({recordings_query.model_dump_json(exclude_none=True)}): {e}"
+            )
+            return None
+        return results
+
     async def _arun_impl(self, change: str) -> tuple[str, MaxRecordingUniversalFilters]:
+        from posthog.sync import database_sync_to_async
+
         result = await self._invoke_graph(change)
         if type(result["output"]) is not MaxRecordingUniversalFilters:
             content = result["intermediate_steps"][-1][0].tool_input
             filters = MaxRecordingUniversalFilters.model_validate(self.context.get("current_filters", {}))
         else:
             try:
-                content = "✅ Updated session recordings filters."
                 filters = MaxRecordingUniversalFilters.model_validate(result["output"])
+
+                # Convert filters to recordings query and execute
+                recordings_query = self._convert_max_filters_to_recordings_query(filters)
+                from time import sleep
+
+                sleep(10)
+                query_results = await database_sync_to_async(self._get_recordings_with_filters, thread_sensitive=False)(
+                    recordings_query
+                )
+
+                if query_results is None:
+                    content = "✅ Updated session recordings filters, but encountered an issue fetching results."
+                else:
+                    total_count = len(query_results.results)
+                    if total_count == 0:
+                        content = "✅ Updated session recordings filters. No recordings found matching these criteria."
+                    elif total_count == 1:
+                        content = "✅ Updated session recordings filters. Found 1 recording matching these criteria."
+                    else:
+                        content = f"✅ Updated session recordings filters. Found {total_count} recordings matching these criteria."
             except Exception as e:
                 raise ValueError(f"Failed to generate MaxRecordingUniversalFilters: {e}")
         return content, filters

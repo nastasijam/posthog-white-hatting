@@ -1222,6 +1222,12 @@ export type TrendsFilter = {
     movingAverageIntervals?: number
     /** detailed results table */
     detailedResultsAggregationType?: 'total' | 'average' | 'median'
+    /**
+     * When using session properties as math_property, aggregate at session level instead of event level.
+     * Groups by session_id first, then applies math aggregation.
+     * @default false
+     */
+    sessionLevelAggregation?: boolean
 }
 
 export type CalendarHeatmapFilter = {
@@ -1244,6 +1250,7 @@ export const TRENDS_FILTER_PROPERTIES = new Set<keyof TrendsFilter>([
     'showPercentStackView',
     'yAxisScaleType',
     'hiddenLegendIndexes',
+    'sessionLevelAggregation',
 ])
 
 export interface TrendsQueryResponse extends AnalyticsQueryResponseBase {

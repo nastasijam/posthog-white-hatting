@@ -78,6 +78,7 @@ class BackfillDetails:
     start_at: str | None
     end_at: str | None
     is_earliest_backfill: bool = False
+    is_last_backfill_run: bool = False
 
 
 @dataclass(kw_only=True)
@@ -313,6 +314,17 @@ class DatabricksBatchExportInputs(BaseBatchExportInputs):
 
 
 @dataclass(kw_only=True)
+class WorkflowsBatchExportInputs(BaseBatchExportInputs):
+    """Inputs for Workflows export workflow.
+
+    NOTE: "Workflows" in this context refers to PostHog Workflows. PostHog Workflows
+    are not related to Temporal Workflows.
+    """
+
+    topic: str
+
+
+@dataclass(kw_only=True)
 class HttpBatchExportInputs(BaseBatchExportInputs):
     """Inputs for Http export workflow."""
 
@@ -341,6 +353,7 @@ DESTINATION_WORKFLOWS = {
         NoOpInputs,
     ),
     "NoOp": ("no-op", NoOpInputs),
+    "Workflows": ("workflows-export", WorkflowsBatchExportInputs),
 }
 
 

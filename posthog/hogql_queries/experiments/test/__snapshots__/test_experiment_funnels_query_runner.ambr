@@ -38,11 +38,6 @@
                                   prop AS prop
            FROM
              (SELECT aggregation_target AS aggregation_target,
-                     timestamp AS timestamp,
-                     step_0 AS step_0,
-                     latest_0 AS latest_0,
-                     step_1 AS step_1,
-                     latest_1 AS latest_1,
                      prop,
                      if(and(ifNull(lessOrEquals(latest_0, latest_1), 0), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), 2, 1) AS steps,
                      if(and(isNotNull(latest_1), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), dateDiff('second', latest_0, latest_1), NULL) AS step_1_conversion_time,
@@ -64,9 +59,7 @@
                            latest_0 AS latest_0,
                            step_1 AS step_1,
                            latest_1 AS latest_1,
-                           prop_basic AS prop_basic,
                            prop,
-                           prop_vals AS prop_vals,
                            if(notEmpty(arrayFilter(x -> notEmpty(x), prop_vals)), prop_vals, ['']) AS prop
                     FROM
                       (SELECT toTimeZone(e.timestamp, 'UTC') AS timestamp,
@@ -149,11 +142,6 @@
                                   prop AS prop
            FROM
              (SELECT aggregation_target AS aggregation_target,
-                     timestamp AS timestamp,
-                     step_0 AS step_0,
-                     latest_0 AS latest_0,
-                     step_1 AS step_1,
-                     latest_1 AS latest_1,
                      prop,
                      if(and(ifNull(lessOrEquals(latest_0, latest_1), 0), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), 2, 1) AS steps,
                      if(and(isNotNull(latest_1), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), dateDiff('second', latest_0, latest_1), NULL) AS step_1_conversion_time,
@@ -175,9 +163,7 @@
                            latest_0 AS latest_0,
                            step_1 AS step_1,
                            latest_1 AS latest_1,
-                           prop_basic AS prop_basic,
                            prop,
-                           prop_vals AS prop_vals,
                            if(notEmpty(arrayFilter(x -> notEmpty(x), prop_vals)), prop_vals, ['']) AS prop
                     FROM
                       (SELECT toTimeZone(e.timestamp, 'UTC') AS timestamp,
@@ -260,11 +246,6 @@
                                   prop AS prop
            FROM
              (SELECT aggregation_target AS aggregation_target,
-                     timestamp AS timestamp,
-                     step_0 AS step_0,
-                     latest_0 AS latest_0,
-                     step_1 AS step_1,
-                     latest_1 AS latest_1,
                      prop,
                      if(and(ifNull(lessOrEquals(latest_0, latest_1), 0), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), 2, 1) AS steps,
                      if(and(isNotNull(latest_1), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), dateDiff('second', latest_0, latest_1), NULL) AS step_1_conversion_time,
@@ -286,9 +267,7 @@
                            latest_0 AS latest_0,
                            step_1 AS step_1,
                            latest_1 AS latest_1,
-                           prop_basic AS prop_basic,
                            prop,
-                           prop_vals AS prop_vals,
                            if(notEmpty(arrayFilter(x -> notEmpty(x), prop_vals)), prop_vals, ['']) AS prop
                     FROM
                       (SELECT toTimeZone(e.timestamp, 'UTC') AS timestamp,
@@ -371,11 +350,6 @@
                                   prop AS prop
            FROM
              (SELECT aggregation_target AS aggregation_target,
-                     timestamp AS timestamp,
-                     step_0 AS step_0,
-                     latest_0 AS latest_0,
-                     step_1 AS step_1,
-                     latest_1 AS latest_1,
                      prop,
                      if(and(ifNull(lessOrEquals(latest_0, latest_1), 0), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), 2, 1) AS steps,
                      if(and(isNotNull(latest_1), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), dateDiff('second', latest_0, latest_1), NULL) AS step_1_conversion_time,
@@ -397,9 +371,7 @@
                            latest_0 AS latest_0,
                            step_1 AS step_1,
                            latest_1 AS latest_1,
-                           prop_basic AS prop_basic,
                            prop,
-                           prop_vals AS prop_vals,
                            if(notEmpty(arrayFilter(x -> notEmpty(x), prop_vals)), prop_vals, ['']) AS prop
                     FROM
                       (SELECT toTimeZone(e.timestamp, 'UTC') AS timestamp,
@@ -492,11 +464,6 @@
                                   prop AS prop
            FROM
              (SELECT aggregation_target AS aggregation_target,
-                     timestamp AS timestamp,
-                     step_0 AS step_0,
-                     latest_0 AS latest_0,
-                     step_1 AS step_1,
-                     latest_1 AS latest_1,
                      prop,
                      if(and(ifNull(lessOrEquals(latest_0, latest_1), 0), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), 2, 1) AS steps,
                      if(and(isNotNull(latest_1), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), dateDiff('second', latest_0, latest_1), NULL) AS step_1_conversion_time,
@@ -518,9 +485,7 @@
                            latest_0 AS latest_0,
                            step_1 AS step_1,
                            latest_1 AS latest_1,
-                           prop_basic AS prop_basic,
                            prop,
-                           prop_vals AS prop_vals,
                            if(notEmpty(arrayFilter(x -> notEmpty(x), prop_vals)), prop_vals, ['']) AS prop
                     FROM
                       (SELECT toTimeZone(e.timestamp, 'UTC') AS timestamp,
@@ -613,11 +578,6 @@
                                   prop AS prop
            FROM
              (SELECT aggregation_target AS aggregation_target,
-                     timestamp AS timestamp,
-                     step_0 AS step_0,
-                     latest_0 AS latest_0,
-                     step_1 AS step_1,
-                     latest_1 AS latest_1,
                      prop,
                      if(and(ifNull(lessOrEquals(latest_0, latest_1), 0), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), 2, 1) AS steps,
                      if(and(isNotNull(latest_1), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), dateDiff('second', latest_0, latest_1), NULL) AS step_1_conversion_time,
@@ -639,9 +599,7 @@
                            latest_0 AS latest_0,
                            step_1 AS step_1,
                            latest_1 AS latest_1,
-                           prop_basic AS prop_basic,
                            prop,
-                           prop_vals AS prop_vals,
                            if(notEmpty(arrayFilter(x -> notEmpty(x), prop_vals)), prop_vals, ['']) AS prop
                     FROM
                       (SELECT toTimeZone(e.timestamp, 'UTC') AS timestamp,
@@ -734,11 +692,6 @@
                                   prop AS prop
            FROM
              (SELECT aggregation_target AS aggregation_target,
-                     timestamp AS timestamp,
-                     step_0 AS step_0,
-                     latest_0 AS latest_0,
-                     step_1 AS step_1,
-                     latest_1 AS latest_1,
                      prop,
                      if(and(ifNull(lessOrEquals(latest_0, latest_1), 0), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), 2, 1) AS steps,
                      if(and(isNotNull(latest_1), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), dateDiff('second', latest_0, latest_1), NULL) AS step_1_conversion_time,
@@ -760,9 +713,7 @@
                            latest_0 AS latest_0,
                            step_1 AS step_1,
                            latest_1 AS latest_1,
-                           prop_basic AS prop_basic,
                            prop,
-                           prop_vals AS prop_vals,
                            if(notEmpty(arrayFilter(x -> notEmpty(x), prop_vals)), prop_vals, ['']) AS prop
                     FROM
                       (SELECT toTimeZone(e.timestamp, 'UTC') AS timestamp,
@@ -838,11 +789,6 @@
                                   prop AS prop
            FROM
              (SELECT aggregation_target AS aggregation_target,
-                     timestamp AS timestamp,
-                     step_0 AS step_0,
-                     latest_0 AS latest_0,
-                     step_1 AS step_1,
-                     latest_1 AS latest_1,
                      prop,
                      if(and(ifNull(lessOrEquals(latest_0, latest_1), 0), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), 2, 1) AS steps,
                      if(and(isNotNull(latest_1), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), dateDiff('second', latest_0, latest_1), NULL) AS step_1_conversion_time,
@@ -864,9 +810,7 @@
                            latest_0 AS latest_0,
                            step_1 AS step_1,
                            latest_1 AS latest_1,
-                           prop_basic AS prop_basic,
                            prop,
-                           prop_vals AS prop_vals,
                            if(notEmpty(arrayFilter(x -> notEmpty(x), prop_vals)), prop_vals, ['']) AS prop
                     FROM
                       (SELECT toTimeZone(e.timestamp, 'UTC') AS timestamp,
@@ -942,11 +886,6 @@
                                   prop AS prop
            FROM
              (SELECT aggregation_target AS aggregation_target,
-                     timestamp AS timestamp,
-                     step_0 AS step_0,
-                     latest_0 AS latest_0,
-                     step_1 AS step_1,
-                     latest_1 AS latest_1,
                      prop,
                      if(and(ifNull(lessOrEquals(latest_0, latest_1), 0), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), 2, 1) AS steps,
                      if(and(isNotNull(latest_1), ifNull(lessOrEquals(latest_1, plus(toTimeZone(latest_0, 'UTC'), toIntervalDay(14))), 0)), dateDiff('second', latest_0, latest_1), NULL) AS step_1_conversion_time,
@@ -968,9 +907,7 @@
                            latest_0 AS latest_0,
                            step_1 AS step_1,
                            latest_1 AS latest_1,
-                           prop_basic AS prop_basic,
                            prop,
-                           prop_vals AS prop_vals,
                            if(notEmpty(arrayFilter(x -> notEmpty(x), prop_vals)), prop_vals, ['']) AS prop
                     FROM
                       (SELECT toTimeZone(e.timestamp, 'UTC') AS timestamp,

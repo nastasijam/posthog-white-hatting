@@ -8,6 +8,8 @@ from uuid import UUID
 
 from django.conf import settings
 
+import posthoganalytics
+
 from posthog.schema import (
     HogQLQueryModifiers,
     InCohortVia,
@@ -62,6 +64,7 @@ from posthog.clickhouse.materialized_columns import (
 )
 from posthog.clickhouse.property_groups import property_groups
 from posthog.models.exchange_rate.sql import EXCHANGE_RATE_DICTIONARY_NAME
+from posthog.models.organization import Organization
 from posthog.models.property import PropertyName, TableColumn
 from posthog.models.surveys.util import (
     filter_survey_sent_events_by_unique_submission,
@@ -151,7 +154,18 @@ def prepare_ast_for_printing(
     with context.timings.measure("resolve_types"):
         node = resolve_types(node, context, dialect=dialect, scopes=[node.type for node in stack] if stack else None)
 
-    if context.modifiers.optimizeProjections:
+    organization: Organization | None = context.team.organization if context.team else None
+    push_projections_down = (
+        posthoganalytics.feature_enabled(
+            "projection-pushdown",
+            str(organization.id),
+            groups={"organization": str(organization.id)},
+            group_properties={"organization": {"id": str(organization.id)}},
+        )
+        if organization and context.team
+        else False
+    )
+    if push_projections_down:
         with context.timings.measure("projection_pushdown"):
             node = pushdown_projections(node, context)
 

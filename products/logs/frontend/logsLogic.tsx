@@ -24,6 +24,7 @@ const DEFAULT_DATE_RANGE = { date_from: '-1h', date_to: null }
 const DEFAULT_SEVERITY_LEVELS = [] as LogsQuery['severityLevels']
 const DEFAULT_SERVICE_NAMES = [] as LogsQuery['serviceNames']
 const DEFAULT_ORDER_BY = 'latest' as LogsQuery['orderBy']
+const LOGS_PAGE_SIZE = 100
 
 export const logsLogic = kea<logsLogicType>([
     path(['products', 'logs', 'frontend', 'logsLogic']),
@@ -87,6 +88,7 @@ export const logsLogic = kea<logsLogicType>([
 
     actions({
         runQuery: (debounce?: integer) => ({ debounce }),
+        loadMoreLogs: true,
         cancelInProgressLogs: (logsAbortController: AbortController | null) => ({ logsAbortController }),
         cancelInProgressSparkline: (sparklineAbortController: AbortController | null) => ({ sparklineAbortController }),
         setLogsAbortController: (logsAbortController: AbortController | null) => ({ logsAbortController }),
@@ -206,7 +208,7 @@ export const logsLogic = kea<logsLogicType>([
             {
                 fetchLogs: () => true,
                 fetchLogsSuccess: () => false,
-                fetchLogsFailure: () => true,
+                fetchLogsFailure: () => false,
             },
         ],
         sparklineLoading: [
@@ -214,7 +216,7 @@ export const logsLogic = kea<logsLogicType>([
             {
                 fetchSparkline: () => true,
                 fetchSparklineSuccess: () => false,
-                fetchSparklineFailure: () => true,
+                fetchSparklineFailure: () => false,
             },
         ],
         openFilterOnInsert: [
@@ -237,6 +239,18 @@ export const logsLogic = kea<logsLogicType>([
                 unpinLog: (state, { logId }) => state.filter((log) => log.uuid !== logId),
             },
         ],
+        logsLimit: [
+            LOGS_PAGE_SIZE as number,
+            {
+                loadMoreLogs: (state) => state + LOGS_PAGE_SIZE,
+                setDateRange: () => LOGS_PAGE_SIZE,
+                setFilterGroup: () => LOGS_PAGE_SIZE,
+                setSearchTerm: () => LOGS_PAGE_SIZE,
+                setSeverityLevels: () => LOGS_PAGE_SIZE,
+                setServiceNames: () => LOGS_PAGE_SIZE,
+                setOrderBy: () => LOGS_PAGE_SIZE,
+            },
+        ],
     }),
 
     loaders(({ values, actions }) => ({
@@ -250,8 +264,7 @@ export const logsLogic = kea<logsLogicType>([
 
                     const response = await api.logs.query({
                         query: {
-                            limit: 100,
-                            offset: values.logs.length,
+                            limit: values.logsLimit,
                             orderBy: values.orderBy,
                             dateRange: values.utcDateRange,
                             searchTerm: values.searchTerm,
@@ -385,6 +398,10 @@ export const logsLogic = kea<logsLogicType>([
                 return { data, labels, dates }
             },
         ],
+        logsCanLoadMore: [
+            (s) => [s.logs, s.logsLimit],
+            (logs, logsLimit) => logs.length === logsLimit && logsLimit >= LOGS_PAGE_SIZE,
+        ],
     })),
 
     listeners(({ values, actions }) => ({
@@ -394,6 +411,9 @@ export const logsLogic = kea<logsLogicType>([
             }
             actions.fetchLogs()
             actions.fetchSparkline()
+        },
+        loadMoreLogs: () => {
+            actions.runQuery()
         },
         cancelInProgressLogs: ({ logsAbortController }) => {
             if (values.logsAbortController !== null) {

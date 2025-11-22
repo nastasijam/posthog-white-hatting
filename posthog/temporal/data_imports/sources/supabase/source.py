@@ -15,8 +15,7 @@ from products.data_warehouse.backend.types import ExternalDataSourceType
 @SourceRegistry.register
 class SupabaseSource(PostgresSource):  # type: ignore
     def __init__(self):
-        super().__init__()
-        self.source_name = "Supabase"
+        super().__init__(source_name="Supabase")
 
     @property
     def source_type(self) -> ExternalDataSourceType:

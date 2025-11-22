@@ -633,3 +633,7 @@ export function getExpressionCommentForQuestion(
     }
     return `Question ${questionIndex + 1}`
 }
+
+export function getSurveyForFeatureFlagVariant(variantKey: string, surveys?: Survey[]): Survey | undefined {
+    return surveys?.find((survey) => survey.conditions?.linkedFlagVariant === variantKey)
+}

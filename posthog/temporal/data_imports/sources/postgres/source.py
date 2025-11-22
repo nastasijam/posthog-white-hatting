@@ -38,7 +38,9 @@ PostgresErrors = {
 
 @SourceRegistry.register
 class PostgresSource(SimpleSource[PostgresSourceConfig], SSHTunnelMixin, ValidateDatabaseHostMixin):
-    source_name = "Postgres"
+    def __init__(self, source_name: str = "Postgres"):
+        super().__init__()
+        self.source_name = source_name
 
     @property
     def source_type(self) -> ExternalDataSourceType:

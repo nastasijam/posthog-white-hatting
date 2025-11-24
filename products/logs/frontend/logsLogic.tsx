@@ -413,7 +413,7 @@ export const logsLogic = kea<logsLogicType>([
             actions.fetchSparkline()
         },
         loadMoreLogs: () => {
-            actions.runQuery()
+            actions.fetchLogs()
         },
         cancelInProgressLogs: ({ logsAbortController }) => {
             if (values.logsAbortController !== null) {

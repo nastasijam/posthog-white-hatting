@@ -398,10 +398,7 @@ export const logsLogic = kea<logsLogicType>([
                 return { data, labels, dates }
             },
         ],
-        logsCanLoadMore: [
-            (s) => [s.logs, s.logsLimit],
-            (logs, logsLimit) => logs.length === logsLimit && logsLimit >= LOGS_PAGE_SIZE,
-        ],
+        logsCanLoadMore: [(s) => [s.logs, s.logsLimit], (logs, logsLimit) => logs.length === logsLimit],
     })),
 
     listeners(({ values, actions }) => ({

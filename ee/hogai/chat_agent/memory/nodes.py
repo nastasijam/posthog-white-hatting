@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from django.utils import timezone
 
+from asgiref.sync import async_to_sync
 from langchain_core.messages import (
     AIMessage as LangchainAIMessage,
     BaseMessage,
@@ -27,7 +28,7 @@ from posthog.schema import (
     EventTaxonomyItem,
     EventTaxonomyQuery,
     HumanMessage,
-    VisualizationMessage,
+    VisualizationArtifactMessage,
 )
 
 from posthog.event_usage import report_user_action
@@ -35,7 +36,6 @@ from posthog.hogql_queries.ai.event_taxonomy_query_runner import EventTaxonomyQu
 from posthog.hogql_queries.query_runner import ExecutionMode
 from posthog.utils import human_list
 
-from ee.hogai.artifacts.utils import is_visualization
 from ee.hogai.core.agent_modes import SLASH_COMMAND_INIT, SLASH_COMMAND_REMEMBER
 from ee.hogai.core.mixins import AssistantContextMixin
 from ee.hogai.core.node import AssistantNode
@@ -433,26 +433,18 @@ class MemoryCollectorNode(MemoryOnboardingShouldRunMixin):
         node_messages = state.memory_collection_messages or []
 
         filtered_messages = filter_and_merge_messages(
-            state.messages, entity_filter=(HumanMessage, AssistantMessage, VisualizationMessage, ArtifactMessage)
+            state.messages, entity_filter=(HumanMessage, AssistantMessage, ArtifactMessage)
         )
         conversation: list[BaseMessage] = []
 
-        artifacts = self.context_manager.artifacts.get_from_messages(filtered_messages)
+        filtered_messages = async_to_sync(self.context_manager.artifacts.aenrich_messages)(state.messages)
         for message in filtered_messages:
             if isinstance(message, HumanMessage):
                 conversation.append(LangchainHumanMessage(content=message.content, id=message.id))
             elif isinstance(message, AssistantMessage):
                 conversation.append(LangchainAIMessage(content=message.content, id=message.id))
-            elif is_visualization(message):
-                if isinstance(message, VisualizationMessage):
-                    schema = message.answer.model_dump_json(exclude_unset=True, exclude_none=True)
-                else:
-                    content = next(
-                        (artifact for artifact in artifacts if artifact.short_id == message.artifact_id), None
-                    )
-                    if not content:
-                        raise ValueError(f"Artifact {message.artifact_id} not found")
-                    schema = content.data.query.model_dump_json(exclude_unset=True, exclude_none=True)
+            elif isinstance(message, VisualizationArtifactMessage):
+                schema = message.content.query.model_dump_json(exclude_unset=True, exclude_none=True)
                 conversation += ChatPromptTemplate.from_messages(
                     [
                         ("assistant", MEMORY_COLLECTOR_WITH_VISUALIZATION_PROMPT),

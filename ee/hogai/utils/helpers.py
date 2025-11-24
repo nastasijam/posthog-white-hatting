@@ -31,7 +31,6 @@ from posthog.schema import (
     RetentionQuery,
     TeamTaxonomyQuery,
     TrendsQuery,
-    VisualizationMessage,
 )
 
 from posthog.hogql_queries.ai.team_taxonomy_query_runner import TeamTaxonomyQueryRunner
@@ -50,7 +49,6 @@ def filter_and_merge_messages(
     messages: Sequence[AssistantMessageUnion],
     entity_filter: Union[tuple[type[AssistantMessageUnion], ...], type[AssistantMessageUnion]] = (
         AssistantMessage,
-        VisualizationMessage,
         ArtifactMessage,
     ),
 ) -> list[AssistantMessageUnion]:

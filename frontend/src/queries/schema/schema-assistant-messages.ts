@@ -61,6 +61,8 @@ export enum ArtifactSource {
     Artifact = 'artifact',
     /** Reference to a saved insight (stored in Insight model) */
     Insight = 'insight',
+    /** Legacy visualization message converted to artifact (content stored inline in state) */
+    State = 'state',
 }
 
 /** Type of artifact content */

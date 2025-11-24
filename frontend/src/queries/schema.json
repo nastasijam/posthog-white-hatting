@@ -791,7 +791,7 @@
         },
         "ArtifactSource": {
             "description": "Source of artifact - determines which model to fetch from",
-            "enum": ["artifact", "insight"],
+            "enum": ["artifact", "insight", "state"],
             "type": "string"
         },
         "AssistantArrayPropertyFilter": {

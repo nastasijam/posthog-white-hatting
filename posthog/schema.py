@@ -73,6 +73,7 @@ class ArtifactContentType(StrEnum):
 class ArtifactSource(StrEnum):
     ARTIFACT = "artifact"
     INSIGHT = "insight"
+    STATE = "state"
 
 
 class AssistantArrayPropertyFilterOperator(StrEnum):
@@ -12155,6 +12156,7 @@ class TileFilters(BaseModel):
     breakdown_filter: Optional[BreakdownFilter] = None
     date_from: Optional[str] = None
     date_to: Optional[str] = None
+    explicitDate: Optional[bool] = None
     properties: Optional[
         list[
             Union[

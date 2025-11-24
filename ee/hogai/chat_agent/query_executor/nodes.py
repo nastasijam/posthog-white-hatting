@@ -56,5 +56,5 @@ class QueryExecutorNode(AssistantNode):
     async def _extract_query(self, message: ArtifactMessage) -> AnyAssistantGeneratedQuery:
         if not message.artifact_id:
             raise ValueError("ArtifactMessage must have a artifact_id")
-        content = await self.context_manager.artifacts.aget_visualization_content_by_short_id(message.artifact_id)
+        content = await self.context_manager.artifacts.aget_content_by_short_id(message.artifact_id)
         return cast(AnyAssistantGeneratedQuery, content.query)

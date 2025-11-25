@@ -905,6 +905,8 @@ export const parseEventHeaders = (headers?: MessageHeader[]): EventHeaders => {
                 result.token = value
             } else if (key === 'distinct_id') {
                 result.distinct_id = value
+            } else if (key === 'session_id') {
+                result.session_id = value
             } else if (key === 'timestamp') {
                 result.timestamp = value
             } else if (key === 'event') {

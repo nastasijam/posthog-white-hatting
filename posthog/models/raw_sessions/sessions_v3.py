@@ -720,6 +720,8 @@ def GET_NUM_SHARDED_RAW_SESSIONS_ACTIVE_PARTS(partitions: list[str]) -> str:
     Args:
         partitions: List of partition names in YYYYMM format (e.g., ['202501', '202412'])
     """
+    if not partitions:
+        raise ValueError("partitions list cannot be empty")
     # Format partitions for SQL IN clause: ('202501', '202412')
     partitions_sql = ", ".join(f"'{p}'" for p in partitions)
 

@@ -7,9 +7,7 @@ import posthog.models.utils
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ("posthog", "0919_teammarketinganalyticsconfig__custom_source_mappings"),
-    ]
+    dependencies = [("posthog", "0920_alter_integration_kind")]
 
     operations = [
         migrations.CreateModel(

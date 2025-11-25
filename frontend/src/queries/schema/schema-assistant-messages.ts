@@ -339,6 +339,7 @@ export type AssistantTool =
     | 'switch_mode'
     | 'summarize_sessions'
     | 'create_insight'
+    | 'subagent'
 
 export enum AgentMode {
     ProductAnalytics = 'product_analytics',

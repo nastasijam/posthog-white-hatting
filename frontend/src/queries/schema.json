@@ -1913,7 +1913,8 @@
                 "execute_sql",
                 "switch_mode",
                 "summarize_sessions",
-                "create_insight"
+                "create_insight",
+                "subagent"
             ],
             "type": "string"
         },

@@ -701,3 +701,5 @@ class TestRawSessionsModel(ClickhouseTestMixin, BaseTest):
         result = sync_execute(query)
         self.assertEqual(len(result), 1)
         self.assertIsInstance(result[0][0], int)
+        self.assertIsInstance(result[0][1], str)
+        self.assertIsInstance(result[0][2], str)

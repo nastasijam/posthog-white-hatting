@@ -11,7 +11,7 @@ import { propertyDefinitionsModel } from '~/models/propertyDefinitionsModel'
 import { QuickFilterContext } from '~/queries/schema/schema-general'
 import { PropertyFilterType, PropertyOperator, QuickFilterOption } from '~/types'
 
-import { allowedOperators, quickFilterFormLogic } from './quickFilterFormLogic'
+import { allowedOperators, operatorsWithoutValues, quickFilterFormLogic } from './quickFilterFormLogic'
 import { quickFiltersLogic } from './quickFiltersLogic'
 import { quickFiltersModalLogic } from './quickFiltersModalLogic'
 
@@ -135,7 +135,9 @@ function FilterOptionRow({
                     editable={!quickFiltersLoading && !!propertyName}
                     onChange={(operator, value) => {
                         let stringValue: string | null = null
-                        if (typeof value === 'string') {
+                        if (operatorsWithoutValues.includes(operator)) {
+                            stringValue = null
+                        } else if (typeof value === 'string') {
                             stringValue = value
                         } else if (Array.isArray(value)) {
                             stringValue = value.length > 0 ? String(value[0]) : null

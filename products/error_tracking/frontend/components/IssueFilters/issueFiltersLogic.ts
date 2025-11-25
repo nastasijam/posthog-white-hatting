@@ -1,12 +1,14 @@
 import equal from 'fast-deep-equal'
-import { actions, connect, kea, key, path, props, reducers } from 'kea'
+import { actions, connect, kea, key, path, props, reducers, selectors } from 'kea'
 import { actionToUrl, router, urlToAction } from 'kea-router'
 
+import { quickFiltersSectionLogic } from 'lib/components/QuickFilters'
 import { taxonomicFilterLogic } from 'lib/components/TaxonomicFilter/taxonomicFilterLogic'
+import { isUniversalGroupFilterLike } from 'lib/components/UniversalFilters/utils'
 import { Params } from 'scenes/sceneTypes'
 
-import { DateRange } from '~/queries/schema/schema-general'
-import { FilterLogicalOperator, UniversalFiltersGroup } from '~/types'
+import { DateRange, QuickFilterContext } from '~/queries/schema/schema-general'
+import { FilterLogicalOperator, PropertyFilterType, UniversalFiltersGroup } from '~/types'
 
 import { syncSearchParams, updateSearchParams } from '../../utils'
 import { TAXONOMIC_FILTER_LOGIC_KEY, TAXONOMIC_GROUP_TYPES } from './consts'
@@ -30,6 +32,10 @@ export const issueFiltersLogic = kea<issueFiltersLogicType>([
     key(({ logicKey }) => logicKey),
 
     connect(() => ({
+        values: [
+            quickFiltersSectionLogic({ context: QuickFilterContext.ErrorTrackingIssueFilters }),
+            ['selectedQuickFilters'],
+        ],
         actions: [
             taxonomicFilterLogic({
                 taxonomicFilterLogicKey: TAXONOMIC_FILTER_LOGIC_KEY,
@@ -71,6 +77,32 @@ export const issueFiltersLogic = kea<issueFiltersLogicType>([
             DEFAULT_SEARCH_QUERY as string,
             {
                 setSearchQuery: (_, { searchQuery }) => searchQuery,
+            },
+        ],
+    }),
+    selectors({
+        mergedFilterGroup: [
+            (s) => [s.filterGroup, s.selectedQuickFilters],
+            (filterGroup: UniversalFiltersGroup, selectedQuickFilters: Record<string, any>): UniversalFiltersGroup => {
+                const firstValue = filterGroup.values[0]
+                const omnisearchFilters = (isUniversalGroupFilterLike(firstValue) ? firstValue.values : []) as any[]
+
+                const quickFilterFilters = Object.values(selectedQuickFilters).map((qf: any) => ({
+                    type: PropertyFilterType.Event,
+                    key: qf.propertyName,
+                    operator: qf.operator,
+                    ...(qf.value !== null && { value: [qf.value] }),
+                }))
+
+                return {
+                    type: FilterLogicalOperator.And,
+                    values: [
+                        {
+                            type: FilterLogicalOperator.And,
+                            values: [...omnisearchFilters, ...quickFilterFilters],
+                        },
+                    ],
+                } as UniversalFiltersGroup
             },
         ],
     }),

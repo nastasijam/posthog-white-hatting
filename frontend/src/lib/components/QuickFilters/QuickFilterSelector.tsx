@@ -22,14 +22,18 @@ export function QuickFilterSelector({
     onChange,
 }: QuickFilterSelectorProps): JSX.Element {
     const getOptionKey = (opt: QuickFilterOption): string => {
-        return opt.value !== null ? `${opt.value}::${opt.operator}` : opt.operator
+        return operatorsWithoutValues.includes(opt.operator)
+            ? opt.operator
+            : opt.value !== null && opt.value !== ''
+              ? `${opt.value}::${opt.operator}`
+              : opt.operator
     }
 
     const currentKey = useMemo(() => {
         if (operator !== null && operatorsWithoutValues.includes(operator)) {
             return operator
         }
-        if (value !== null) {
+        if (value !== null && value !== '') {
             return `${value}::${operator}`
         }
         return null

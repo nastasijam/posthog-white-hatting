@@ -38,6 +38,3 @@ class QuickFilterContextMembership(UUIDModel):
             models.UniqueConstraint(fields=["team", "quick_filter", "context"], name="unique_filter_context_membership")
         ]
         db_table = "posthog_quickfiltercontextmembership"
-
-    def __str__(self) -> str:
-        return f"{self.quick_filter.name} - {self.context} (Team: {self.team.name})"

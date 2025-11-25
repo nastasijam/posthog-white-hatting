@@ -10,7 +10,8 @@ import {
     quickFiltersModalLogic,
 } from 'lib/components/QuickFilters'
 
-import { QuickFilter, QuickFilterContext } from '~/queries/schema/schema-general'
+import { QuickFilterContext } from '~/queries/schema/schema-general'
+import { QuickFilter } from '~/types'
 
 import { quickFiltersSectionLogic } from './quickFiltersSectionLogic'
 
@@ -45,7 +46,7 @@ export function QuickFiltersSection({ context }: QuickFiltersSectionProps): JSX.
             <LemonButton size="small" icon={<IconGear />} onClick={openModal}>
                 Configure quick filters
             </LemonButton>
-            <QuickFiltersModal context={QuickFilterContext.ErrorTrackingIssueFilters} />
+            <QuickFiltersModal context={context} />
         </>
     )
 }

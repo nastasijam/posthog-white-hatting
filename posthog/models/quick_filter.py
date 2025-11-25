@@ -18,6 +18,9 @@ class QuickFilter(UUIDModel):
 
     class Meta:
         db_table = "posthog_quickfilter"
+        indexes = [
+            models.Index(fields=["team"]),
+        ]
 
     def __str__(self) -> str:
         return f"{self.name} (Team: {self.team.name})"

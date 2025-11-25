@@ -117,6 +117,7 @@ class QuickFilterViewSet(TeamAndOrgViewSetMixin, viewsets.ModelViewSet):
     serializer_class = QuickFilterSerializer
 
     def safely_get_queryset(self, queryset):
+        queryset = queryset.filter(team=self.team).prefetch_related("context_memberships")
         context = self.request.query_params.get("context")
         if context:
             queryset = queryset.filter(context_memberships__context=context).distinct()

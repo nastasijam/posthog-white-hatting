@@ -726,7 +726,7 @@ def GET_NUM_SHARDED_RAW_SESSIONS_ACTIVE_PARTS(partitions: list[str]) -> str:
     partitions_sql = ", ".join(f"'{p}'" for p in partitions)
 
     return f"""
-        SELECT max(parts_count), argMax(partition, parts_count), argMax(host, parts_count)
+        SELECT coalesce(max(parts_count), 0), argMax(partition, parts_count), argMax(host, parts_count)
         FROM (
             SELECT hostName() as host, count() as parts_count, partition
             FROM clusterAllReplicas('{settings.CLICKHOUSE_CLUSTER}', system.parts)

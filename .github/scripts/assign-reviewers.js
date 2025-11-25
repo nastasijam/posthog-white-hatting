@@ -4,6 +4,8 @@ const fs = require('fs')
 const { execSync } = require('child_process')
 
 function parseCodeowners(codeownersPath) {
+
+    console.log("oh come on")
     if (!fs.existsSync(codeownersPath)) {
         console.info('No CODEOWNERS file found')
         return []

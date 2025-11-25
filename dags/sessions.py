@@ -129,7 +129,7 @@ def wait_for_parts_to_merge(
         # Check parts across all relevant partitions
         query = GET_NUM_SHARDED_RAW_SESSIONS_ACTIVE_PARTS(partitions)
         result = sync_execute(query, sync_client=sync_client)
-        unmerged_parts_count = result[0][0]
+        (unmerged_parts_count, max_partition, max_host) = result[0][0]
 
         if unmerged_parts_count < config.max_unmerged_parts:
             context.log.info(
@@ -141,18 +141,21 @@ def wait_for_parts_to_merge(
         if elapsed > config.parts_check_max_wait_seconds:
             raise TimeoutError(
                 f"Timed out waiting for parts to merge in partitions {partitions} after {elapsed:.0f}s. "
-                f"Current unmerged parts: {unmerged_parts_count}, threshold: {config.max_unmerged_parts}"
+                f"Current unmerged parts: {unmerged_parts_count}, threshold: {config.max_unmerged_parts} "
+                f"Max was on partition {max_partition} on host {max_host}. "
             )
 
         if first_check:
             context.log.info(
                 f"Found {unmerged_parts_count} unmerged parts in partitions {partitions} (threshold: {config.max_unmerged_parts}). "
+                f"Max was on partition {max_partition} on host {max_host}. "
                 f"Waiting for parts to merge..."
             )
             first_check = False
         else:
             context.log.info(
-                f"Still waiting... {unmerged_parts_count} unmerged parts in partitions {partitions} after {elapsed:.0f}s"
+                f"Still waiting... {unmerged_parts_count} unmerged parts in partitions {partitions} after {elapsed:.0f}s. "
+                f"Max was on partition {max_partition} on host {max_host}. "
             )
 
         time.sleep(config.parts_check_poll_frequency_seconds)

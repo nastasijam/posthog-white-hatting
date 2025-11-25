@@ -1,7 +1,16 @@
 name: Auto Assign Reviewers
 
+# NOTE: We use `pull_request_target` here but this is extremely dangerous.
+# DO NOT ATTEMPT TO MODIFY THIS FILE WITHOUT VALIDATING WITH THE SECURITY TEAM.
+#
+# We need to make sure we're never running untrusted code here since this workflow
+# skips any GitHub security checks and any permissions - it'll always run when a user opens a PR against our repo.
+# To make it risk free we need to GUARANTEE we're only ever running code that is trusted - i.e. from our master branch.
+#
+# This has the small downside that changes to CODEOWNERS will not be reflected in here until we merge it to master,
+# which means testing this workflow is slightly less convenient but that's well worth it.
 on:
-    pull_request: # Don't use `pull_request_target` for security reasons (see https://posthog.slack.com/archives/C09V86BQT5X/p1763989103518279)
+    pull_request_target:
         # Only opened or when clicking ready otherwise you can never remove the reviewers
         types: [opened, ready_for_review]
 
@@ -15,22 +24,24 @@ jobs:
         if: github.event.pull_request.draft == false
 
         steps:
-            - name: Checkout repository
+            - name: Checkout master branch
               uses: actions/checkout@v4
               with:
-                  # fetch enough commits to include the BASE_SHA, without fetching the full repo history.
-                  # note: it's possible a PR will have more than 1000 commits, but extremely unlikely.
+                  # fetch enough commits to include the BASE_SHA and HEAD_SHA for diffing
+                  # note: it's possible a PR will start from a very old commit, but extremely unlikely.
                   fetch-depth: 1000
-                  ref: ${{ github.event.pull_request.head.sha }}
+                  ref: master
+
+            # Fetch the PR branch so we can diff against it
+            - name: Fetch PR branch
+              run: git fetch origin ${{ github.event.pull_request.head.sha }}
 
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: '20'
 
-            - name: Fetch master branch
-              run: git fetch origin master
-
+            # Script runs from master branch (protected), but can diff against PR branch
             - name: Run reviewer assignment script
               env:
                   GITHUB_TOKEN: ${{ secrets.POSTHOG_BOT_PAT }}

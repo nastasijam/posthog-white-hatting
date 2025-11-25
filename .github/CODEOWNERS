@@ -13,9 +13,11 @@
 # to manage the risk you're thinking about, do not add an entry.
 
 # ClickHouse team owns Clickhouse migrations
-
 posthog/clickhouse/migrations/** @PostHog/clickhouse
 
 # HogQL team owns HogQL changes
-
 posthog/hogql/** @PostHog/hogql
+
+# Dangerous changes - owned by @PostHog/team-security
+.github/workflows/auto-assign-reviewers.yml @PostHog/team-security
+.github/scripts/** @PostHog/team-security

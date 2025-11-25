@@ -1,4 +1,4 @@
-import { actions, connect, kea, key, path, props, reducers } from 'kea'
+import { actions, connect, kea, key, listeners, path, props, reducers } from 'kea'
 
 import { quickFiltersLogic } from 'lib/components/QuickFilters'
 
@@ -24,6 +24,7 @@ export const quickFiltersSectionLogic = kea<quickFiltersSectionLogicType>([
 
     connect((props: QuickFiltersSectionLogicProps) => ({
         values: [quickFiltersLogic({ context: props.context }), ['quickFilters']],
+        actions: [quickFiltersLogic({ context: props.context }), ['deleteFilter']],
     })),
 
     actions({
@@ -64,4 +65,13 @@ export const quickFiltersSectionLogic = kea<quickFiltersSectionLogicType>([
             },
         ],
     }),
+
+    listeners(({ actions, values }) => ({
+        deleteFilter: ({ id }) => {
+            const deletedFilter = values.quickFilters.find((f) => f.id === id)
+            if (deletedFilter) {
+                actions.clearQuickFilter(deletedFilter.property_name)
+            }
+        },
+    })),
 ])

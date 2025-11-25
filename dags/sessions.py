@@ -129,7 +129,7 @@ def wait_for_parts_to_merge(
         # Check parts across all relevant partitions
         query = GET_NUM_SHARDED_RAW_SESSIONS_ACTIVE_PARTS(partitions)
         result = sync_execute(query, sync_client=sync_client)
-        (unmerged_parts_count, max_partition, max_host) = result[0][0]
+        (unmerged_parts_count, max_partition, max_host) = result[0]
 
         if unmerged_parts_count < config.max_unmerged_parts:
             context.log.info(

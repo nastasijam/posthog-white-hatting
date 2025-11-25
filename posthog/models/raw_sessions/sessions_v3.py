@@ -713,10 +713,25 @@ ORDER BY count(value) DESC
 LIMIT 20
 """
 
-GET_NUM_SHARDED_RAW_SESSIONS_ACTIVE_PARTS = f"""
-    SELECT count()
-    FROM clusterAllReplicas('{settings.CLICKHOUSE_CLUSTER}', system.parts)
-    WHERE database = '{settings.CLICKHOUSE_DATABASE}'
-      AND table = '{SHARDED_RAW_SESSIONS_TABLE_V3()}'
-      AND active = 1
-"""
+
+def GET_NUM_SHARDED_RAW_SESSIONS_ACTIVE_PARTS(partitions: list[str]) -> str:
+    """Get the maximum number of active parts across specified partitions and all nodes.
+
+    Args:
+        partitions: List of partition names in YYYYMM format (e.g., ['202501', '202412'])
+    """
+    # Format partitions for SQL IN clause: ('202501', '202412')
+    partitions_sql = ", ".join(f"'{p}'" for p in partitions)
+
+    return f"""
+        SELECT max(parts_count)
+        FROM (
+            SELECT hostName() as host, count() as parts_count
+            FROM clusterAllReplicas('{settings.CLICKHOUSE_CLUSTER}', system.parts)
+            WHERE database = '{settings.CLICKHOUSE_DATABASE}'
+              AND table = '{SHARDED_RAW_SESSIONS_TABLE_V3()}'
+              AND partition IN ({partitions_sql})
+              AND active = 1
+            GROUP BY host
+        )
+    """

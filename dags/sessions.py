@@ -132,10 +132,9 @@ def wait_for_parts_to_merge(
         unmerged_parts_count = result[0][0]
 
         if unmerged_parts_count < config.max_unmerged_parts:
-            if not first_check:
-                context.log.info(
-                    f"Parts merged sufficiently in partitions {partitions}: {unmerged_parts_count} < {config.max_unmerged_parts}. Proceeding."
-                )
+            context.log.info(
+                f"Acceptable number of active parts in partitions {partitions}: {unmerged_parts_count} < {config.max_unmerged_parts}, proceeding..."
+            )
             return
 
         elapsed = time.time() - start_time
